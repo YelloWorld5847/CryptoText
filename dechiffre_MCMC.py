@@ -1,6 +1,6 @@
 import numpy as np
-from text_utils import load_corpus, transform_to_caps, count_bigrams, char_to_id, id_to_char, count_correct_words, \
-    score_correct_words, frequency_order, apply_code, invert_code
+from text_utils import load_corpus, transform_to_caps, char_to_id, count_correct_words, \
+    score_correct_words, frequency_order, apply_code
 import pickle
 
 
