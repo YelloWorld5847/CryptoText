@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <title>Décryptage</title>
+</head>
+<body>
+    <div class="top">
+        <h1>Décrypter une phrase</h1>
+        <div class="theme-switch">
+            <label class="switch">
+                <input type="checkbox" id="theme-toggle">
+                <span class="slider"></span>
+            </label>
+            <span>Activer le mode sombre</span>
+        </div>
+    </div>
+    <form id="decrypt-form" method="POST">
+        <label for="encrypted_text">Votre phrase cryptée :</label>
+        <input type="text" id="encrypted_text" name="encrypted_text" required>
+        <button type="submit">Décrypter</button>
+    </form>
+
+    <!-- Animation de chargement -->
+    <div id="loading-spinner" class="spinner hidden"></div>
+
+    {% if decrypted_text %}
+    <p><strong>Phrase décryptée :</strong> {{ decrypted_text }}</p>
+    {% endif %}
+    <a href="/">Retour à l'accueil</a>
+
+    <script src="{{ url_for('static', filename='theme.js') }}"></script>
+    <script>
+        // Récupère le formulaire et le spinner
+        const form = document.getElementById('decrypt-form');
+        const spinner = document.getElementById('loading-spinner');
+
+        form.addEventListener('submit', function(event) {
+            // Affiche le spinner lors de la soumission du formulaire
+            spinner.classList.remove('hidden');
+        });
+    </script>
+
+</body>
+</html>

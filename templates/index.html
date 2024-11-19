@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <title>Cryptage et Décryptage</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+
+</head>
+<body>
+    <div class="top">
+        <div class="title">
+            <h1>Bienvenue sur l'outil de Cryptage & Décryptage</h1>
+        </div>
+        <div class="theme-switch">
+            <label class="switch">
+                <input type="checkbox" id="theme-toggle">
+                <span class="slider"></span>
+            </label>
+            <span>Activer le mode sombre</span>
+        </div>
+    </div>
+
+
+    <div class="menu">
+        <a href="/encrypt"><i class="fas fa-lock"></i> Crypter une phrase</a>
+        <a href="/decrypt"><i class="fas fa-unlock"></i> Décrypter une phrase</a>
+    </div>
+    <section class="description">
+        <h2>À propos de cet outil</h2>
+        <p>Ce site vous permet de crypter et décrypter vos messages en toute simplicité.
+           Entrez une phrase et obtenez son équivalent crypté ou décrypté en un clic.</p>
+    </section>
+    <section class="example">
+        <h2>Exemple</h2>
+        <p><strong>Phrase originale :</strong> Bonjour le monde</p>
+        <p><strong>Phrase cryptée :</strong> Jwsvryq od qsyfi</p>
+    </section>
+    <section class="faq">
+        <h2>FAQ</h2>
+        <ul>
+            <p><strong>Quel algorithme est utilisé ?</strong> Cet outil utilise Markov Chain Monte Carlo.</p>
+            <p><strong>Mes données sont-elles sécurisées ?</strong> Oui, aucune donnée n'est sauvegardée.</p>
+        </ul>
+    </section>
+    <section class="contact">
+        <h2>Contact</h2>
+        <p>Pour toute question ou suggestion, envoyez-nous un email à : <a href="mailto:lean.marcepoil@outlook.fr">lean.marcepoil@outlook.fr</a></p>
+    </section>
+
+    <script src="{{ url_for('static', filename='theme.js') }}"></script>
+
+</body>
+</html>
