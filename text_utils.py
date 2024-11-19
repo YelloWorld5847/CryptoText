@@ -4,7 +4,7 @@
 import codecs
 import re
 import numpy as np
-import matplotlib.pyplot as plt
+# import matplotlib.pyplot as plt
 import codecs
 import pickle
 
@@ -117,48 +117,48 @@ def frequency_order(s):
     for i in range(26):
         res[i] = s.count(chr(65+i))
     return list(1 + np.argsort(res)[::-1])
-
-def count_bigrams(corpus, outfile, imagefile = None):
-    
-    # Count of ASCII characters to check everything is ok
-    count = np.zeros(512)
-    for c in corpus:
-        count[ord(c)] += 1
-        
-    for i in range(512):
-        if count[i] > 0:
-            print(str(i) + " " + chr(i) + " " + str(count[i]))
-    
-        
-    # Now we are ready to count the bigrams                
-    bigrams = np.zeros((27,27),dtype='int32')
-    i = 0
-    for c in corpus:
-        j = 0 if c == " " else ord(c) - 64
-        bigrams[i,j] += 1
-        i = j
-    
-    bigrams.tofile(outfile)
-    
-    if imagefile != None:
-        # Plot of the matrix, normalized per line
-        p2D=bigrams.astype('float')/np.tile(sum(bigrams.T),(27,1)).T
-        p2D[np.isnan(p2D)] = 0
-        
-        alpha = 0.33
-        p2Da = p2D**alpha
-        plt.figure(figsize=(8,8))
-        plt.imshow(p2Da,interpolation='nearest', cmap = 'inferno')
-        plt.axis('off')
-        
-        for ip, i in enumerate([32]+list(range(65,91))):
-            plt.text(-1,ip,chr(i),horizontalalignment='center',
-                                    verticalalignment='center')
-            plt.text(ip,-1,chr(i),horizontalalignment='center',
-                                    verticalalignment='center')
-        plt.savefig(imagefile)     
-        
-        return p2Da
+#
+# def count_bigrams(corpus, outfile, imagefile = None):
+#
+#     # Count of ASCII characters to check everything is ok
+#     count = np.zeros(512)
+#     for c in corpus:
+#         count[ord(c)] += 1
+#
+#     for i in range(512):
+#         if count[i] > 0:
+#             print(str(i) + " " + chr(i) + " " + str(count[i]))
+#
+#
+#     # Now we are ready to count the bigrams
+#     bigrams = np.zeros((27,27),dtype='int32')
+#     i = 0
+#     for c in corpus:
+#         j = 0 if c == " " else ord(c) - 64
+#         bigrams[i,j] += 1
+#         i = j
+#
+#     bigrams.tofile(outfile)
+#
+#     if imagefile != None:
+#         # Plot of the matrix, normalized per line
+#         p2D=bigrams.astype('float')/np.tile(sum(bigrams.T),(27,1)).T
+#         p2D[np.isnan(p2D)] = 0
+#
+#         alpha = 0.33
+#         p2Da = p2D**alpha
+#         plt.figure(figsize=(8,8))
+#         plt.imshow(p2Da,interpolation='nearest', cmap = 'inferno')
+#         plt.axis('off')
+#
+#         for ip, i in enumerate([32]+list(range(65,91))):
+#             plt.text(-1,ip,chr(i),horizontalalignment='center',
+#                                     verticalalignment='center')
+#             plt.text(ip,-1,chr(i),horizontalalignment='center',
+#                                     verticalalignment='center')
+#         plt.savefig(imagefile)
+#
+#         return p2Da
         
         
 def create_dictionnary():
