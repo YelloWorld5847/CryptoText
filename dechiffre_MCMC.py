@@ -3,7 +3,6 @@ from text_utils import load_corpus, transform_to_caps, char_to_id, count_correct
     score_correct_words, frequency_order, apply_code
 import pickle
 
-
 # Fonction pour calculer la vraisemblance d'un texte
 def likelihood(s, logp):
     res = 0
@@ -24,9 +23,9 @@ def permute_code(code, i, j):
     return newcode
 
 
-# Fonction principale pour déchiffrer un message
-def decrypt_message(corpus_filename, bigrams_filename, text_to_decrypt, MIN_ITER=2000, MAX_ITER=100000, THRESHOLD=-2.05,
-                    ALPHA=1, GAMMA=4.0, NITER2=2000, temperature=0.05, rho=0.999):
+def decrypt_message_progressive(corpus_filename, bigrams_filename, text_to_decrypt, MIN_ITER=2000, MAX_ITER=100000, THRESHOLD=-2.05,
+                                ALPHA=1, GAMMA=4.0, NITER2=2000, temperature=0.05, rho=0.999):
+
     # Charger les bigrammes et la matrice de probabilité
     bigrams = np.fromfile(bigrams_filename, dtype="int32").reshape(27, 27)
     p = bigrams.astype('float') / np.tile(sum(bigrams.T), (27, 1)).T
@@ -55,11 +54,12 @@ def decrypt_message(corpus_filename, bigrams_filename, text_to_decrypt, MIN_ITER
     best_code = cur_code.copy()
     best_like = cur_like
     best_trad = cur_trad
-
-    print(best_trad + "    N=" + str(0) + " L={0:.2f}".format(best_like))
+    print(f"Initial Guess: {best_trad} (Likelihood={best_like:.2f})\n")
+    yield f"data: Initial Guess: {best_trad} (Likelihood={best_like:.2f})\n\n"
 
     # Boucle principale pour l'optimisation
     for k in range(MAX_ITER):
+        print(f"k: {k}")
         i = np.random.randint(1, 27)
         j = np.random.randint(1, 27)
         tt_code = permute_code(cur_code, i, j)
@@ -78,7 +78,8 @@ def decrypt_message(corpus_filename, bigrams_filename, text_to_decrypt, MIN_ITER
                 best_code = cur_code.copy()
                 best_like = cur_like
                 best_trad = cur_trad
-                print(best_trad + "    [k=" + str(k) + " L={0:.2f}]".format(best_like))
+                print(f"Iteration {k}: {best_trad} (Likelihood={best_like:.2f})\n\n")
+                yield f"data: Iteration {k}: {best_trad} (Likelihood={best_like:.2f})\n\n"
 
         if k > MIN_ITER and best_like > THRESHOLD:
             break
@@ -89,8 +90,10 @@ def decrypt_message(corpus_filename, bigrams_filename, text_to_decrypt, MIN_ITER
 
     cnt, total = count_correct_words(best_trad, dictionnary_words)
     word_score = score_correct_words(best_trad, dictionnary_words)
-
-    print("Mots OK " + str(cnt) + "/" + str(total) + " score=" + str(word_score))
+    print("Enter second phase\n")
+    yield "data: \n\n\n"
+    yield "data: Enter second phase\n\n"
+    yield f"data: Words Matched: {cnt}/{total} (Score={word_score})\n\n"
 
     best_score = GAMMA * word_score + best_like
     cur_code = best_code
@@ -99,6 +102,7 @@ def decrypt_message(corpus_filename, bigrams_filename, text_to_decrypt, MIN_ITER
 
     # Seconde phase : optimisation plus fine
     for k in range(NITER2):
+        print(f"2. k: {k}")
         i = np.random.randint(1, 27)
         j = np.random.randint(1, 27)
         tt_code = permute_code(cur_code, i, j)
@@ -120,10 +124,113 @@ def decrypt_message(corpus_filename, bigrams_filename, text_to_decrypt, MIN_ITER
                 best_code = cur_code
                 best_score = cur_score
                 best_trad = cur_trad
-                print(tt_trad + "  W={0:.2f}".format(tt_word_score))
+                yield f"data: Refinement {k}: {best_trad} (Word Score={tt_word_score:.2f})\n\n"
 
-    # Retourner le message déchiffré
-    return best_trad
+    print(f"Final Decryption: {best_trad}\n\n")
+    # Retourner le message final
+    yield f"data: Final Decryption: {best_trad}\n\n"
+
+
+# Fonction principale pour déchiffrer un message
+# def decrypt_message(corpus_filename, bigrams_filename, text_to_decrypt, MIN_ITER=2000, MAX_ITER=100000, THRESHOLD=-2.05,
+#                     ALPHA=1, GAMMA=4.0, NITER2=2000, temperature=0.05, rho=0.999):
+#     # Charger les bigrammes et la matrice de probabilité
+#     bigrams = np.fromfile(bigrams_filename, dtype="int32").reshape(27, 27)
+#     p = bigrams.astype('float') / np.tile(sum(bigrams.T), (27, 1)).T
+#     p[np.isnan(p)] = 0
+#     EPSILON = 1e-6
+#     logp = np.log(p + EPSILON)
+#
+#     # Préparer le texte pour l'initialisation
+#     freq_text = transform_to_caps(load_corpus(corpus_filename))
+#     ciphered_text = transform_to_caps(text_to_decrypt)
+#
+#     # Initialisation du code basé sur la fréquence
+#     ref_freq = frequency_order(freq_text)
+#     obs_freq = frequency_order(ciphered_text)
+#     freq_code = [0] + list(range(1, 27))
+#
+#     for i in range(1, 27):
+#         pos = obs_freq.index(i)
+#         freq_code[i] = ref_freq[pos]
+#
+#     # Initialisation du meilleur code trouvé
+#     cur_code = freq_code.copy()
+#     cur_trad = apply_code(ciphered_text, cur_code)
+#     cur_like = likelihood(cur_trad, logp)
+#
+#     best_code = cur_code.copy()
+#     best_like = cur_like
+#     best_trad = cur_trad
+#
+#     print(best_trad + "    N=" + str(0) + " L={0:.2f}".format(best_like))
+#
+#     # Boucle principale pour l'optimisation
+#     for k in range(MAX_ITER):
+#         i = np.random.randint(1, 27)
+#         j = np.random.randint(1, 27)
+#         tt_code = permute_code(cur_code, i, j)
+#         tt_trad = apply_code(ciphered_text, tt_code)
+#         tt_like = likelihood(tt_trad, logp)
+#
+#         x = np.random.rand()
+#         p = np.exp(ALPHA * (tt_like - cur_like) * len(ciphered_text))
+#
+#         if x < p:
+#             cur_code = tt_code.copy()
+#             cur_trad = tt_trad
+#             cur_like = tt_like
+#
+#             if cur_like > best_like:
+#                 best_code = cur_code.copy()
+#                 best_like = cur_like
+#                 best_trad = cur_trad
+#                 print(best_trad + "    [k=" + str(k) + " L={0:.2f}]".format(best_like))
+#
+#         if k > MIN_ITER and best_like > THRESHOLD:
+#             break
+#
+#     # Phase 2 : Amélioration du score avec les mots corrects
+#     with open('dictionnary.data', 'rb') as filehandle:
+#         dictionnary_words = pickle.load(filehandle)
+#
+#     cnt, total = count_correct_words(best_trad, dictionnary_words)
+#     word_score = score_correct_words(best_trad, dictionnary_words)
+#
+#     print("Mots OK " + str(cnt) + "/" + str(total) + " score=" + str(word_score))
+#
+#     best_score = GAMMA * word_score + best_like
+#     cur_code = best_code
+#     cur_score = best_score
+#     cur_trad = best_trad
+#
+#     # Seconde phase : optimisation plus fine
+#     for k in range(NITER2):
+#         i = np.random.randint(1, 27)
+#         j = np.random.randint(1, 27)
+#         tt_code = permute_code(cur_code, i, j)
+#         tt_trad = apply_code(ciphered_text, tt_code)
+#         tt_word_score = score_correct_words(tt_trad, dictionnary_words)
+#         tt_like = likelihood(tt_trad, logp)
+#         tt_score = GAMMA * tt_word_score + tt_like
+#
+#         x = np.random.rand()
+#         p = np.exp((tt_score - cur_score) / temperature)
+#         temperature = temperature * rho
+#
+#         if x < p:
+#             cur_code = tt_code.copy()
+#             cur_trad = tt_trad
+#             cur_score = tt_score
+#
+#             if cur_score > best_score:
+#                 best_code = cur_code
+#                 best_score = cur_score
+#                 best_trad = cur_trad
+#                 print(tt_trad + "  W={0:.2f}".format(tt_word_score))
+#
+#     # Retourner le message déchiffré
+#     return best_trad
 
 def crypt_message(otis):
     original = transform_to_caps(otis)
@@ -140,6 +247,12 @@ if __name__ == '__main__':
         VSBL AHTL LSAPK VHB WP GP MJHBL FSL UT BE Y SBZ XP RHGGP HT XP VSTASBLP LBZTSZBHG VHB LB WP XPASBL JPLTVPJ VS ABP STWHTJX CTB SAPM AHTL WP XBJSBL UTP M PLZ X SRHJX XPL JPGMHGZJPL XPL NPGL UTB V HGZ ZPGXT ES VSBG
         """
     )
-    decrypted_message = decrypt_message("swann.txt", "bigrams.dat", ciphered_text)
+
+
+    for update in decrypt_message_progressive("swann.txt", "bigrams.dat", ciphered_text):
+        print(update)
+
+
+    # decrypted_message = decrypt_message_progressive("swann.txt", "bigrams.dat", ciphered_text)
     print("\n")
-    print(decrypted_message)
+    # print(decrypted_message)

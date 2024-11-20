@@ -198,3 +198,36 @@ input:checked + .slider:before {
 .hidden {
   display: none;
 }
+
+#results-container {
+    width: 90%; /* Largeur du conteneur */
+    height: calc(100vh - 300px); /* Hauteur dynamique (80% de la hauteur de la fenêtre - marge) */
+    overflow-y: auto; /* Permet le défilement vertical */
+    border: 1px solid #ccc; /* Bordure */
+    margin: 20px auto; /* Marge de 20px en haut et en bas, centré horizontalement */
+    padding: 10px; /* Espacement intérieur */
+    background-color: #f9f9f9; /* Couleur de fond */
+    color: #333; /* Couleur du texte */
+    font-family: monospace; /* Police */
+    border-radius: 8px; /* Coins arrondis */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Ombre */
+    transition: box-shadow 0.3s ease; /* Transition douce pour l'ombre */
+}
+
+
+#results-container:hover {
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15); /* Ombre plus marquée au survol */
+}
+
+/* Mode sombre */
+body.dark-mode #results-container {
+    background-color: #2c2c2c; /* Fond plus sombre, mais pas noir */
+    color: #f4f4f4; /* Texte clair pour un meilleur contraste */
+    border: 1px solid #444; /* Bordure plus discrète */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15); /* Ombre plus légère en mode sombre */
+}
+
+/* Effet au survol en mode sombre */
+body.dark-mode #results-container:hover {
+    box-shadow: 0 6px 12px rgba(200, 200, 200, 0.3); /* Ombre plus intense au survol */
+}

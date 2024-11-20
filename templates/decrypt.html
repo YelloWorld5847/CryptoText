@@ -14,7 +14,7 @@
                 <input type="checkbox" id="theme-toggle">
                 <span class="slider"></span>
             </label>
-            <span>Activer le mode sombre</span>
+<!--            <span>Activer le mode sombre</span>-->
         </div>
     </div>
     <form id="decrypt-form" method="POST">
@@ -24,12 +24,42 @@
     </form>
 
     <!-- Animation de chargement -->
-    <div id="loading-spinner" class="spinner hidden"></div>
+<!--    <div id="loading-spinner" class="spinner hidden"></div>-->
 
     {% if decrypted_text %}
     <p><strong>Phrase décryptée :</strong> {{ decrypted_text }}</p>
     {% endif %}
+
+
+    <div id="results-container">
+        <p>Les résultats apparaîtront ici...</p>
+    </div>
+
     <a href="/">Retour à l'accueil</a>
+
+    <script>
+        const resultsContainer = document.getElementById('results-container');
+        const encryptedText = "{{ request.form.get('encrypted_text', '') }}";
+
+        if (encryptedText) {
+            const eventSource = new EventSource(`/stream?text=${encodeURIComponent(encryptedText)}`);
+
+            eventSource.onmessage = function(event) {
+                // Ajouter chaque message au conteneur
+                const newMessage = document.createElement('p');
+                newMessage.textContent = event.data;
+                resultsContainer.appendChild(newMessage);
+
+                // Scroller vers le bas pour afficher le dernier message
+                resultsContainer.scrollTop = resultsContainer.scrollHeight;
+            };
+
+            eventSource.onerror = function() {
+                console.error("Erreur de connexion au flux.");
+                eventSource.close();
+            };
+        }
+    </script>
 
     <script src="{{ url_for('static', filename='theme.js') }}"></script>
     <script>
