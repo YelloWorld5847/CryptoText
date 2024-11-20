@@ -83,9 +83,12 @@ def decrypt_message_progressive(corpus_filename, bigrams_filename, text_to_decry
 
         if k > MIN_ITER and best_like > THRESHOLD:
             break
-
+    if bigrams_filename == "bigrams.dat":
+        file_dict = 'dictionnary.data'
+    else:
+        file_dict = 'dictionnary_en.data'
     # Phase 2 : Amélioration du score avec les mots corrects
-    with open('dictionnary.data', 'rb') as filehandle:
+    with open(file_dict, 'rb') as filehandle:
         dictionnary_words = pickle.load(filehandle)
 
     cnt, total = count_correct_words(best_trad, dictionnary_words)

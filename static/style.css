@@ -48,9 +48,17 @@ input {
     width: 100%;
     padding: 10px;
     margin: 10px 0;
-    border: 1px solid #ddd;
+    border: 2px solid #ddd;
     border-radius: 5px;
 }
+
+input:focus {
+    outline: none;
+    border-color: #6200ea; /* Couleur de surbrillance */
+    box-shadow: 0 2px 5px rgba(98, 0, 234, 0.5); /* Effet visuel pour le focus */
+}
+
+
 
 button {
     padding: 10px 20px;
@@ -96,7 +104,13 @@ body.dark-mode {
 body.dark-mode input {
     background-color: #333;
     color: #f4f4f4;
-    border: 1px solid #555;
+    border: 1px solid #575559;
+}
+
+body.dark-mode input:focus {
+    outline: none;
+    border-color: #6200ea; /* Couleur de surbrillance */
+    box-shadow: 0 2px 5px rgba(98, 0, 234, 0.5); /* Effet visuel pour le focus */
 }
 
 body.dark-mode .menu a {
@@ -231,3 +245,45 @@ body.dark-mode #results-container {
 body.dark-mode #results-container:hover {
     box-shadow: 0 6px 12px rgba(200, 200, 200, 0.3); /* Ombre plus intense au survol */
 }
+
+
+select {
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    background-color: #fff;
+    color: #333;
+    font-size: 14px;
+}
+
+select:focus {
+    outline: none;
+    border-color: #6200ea; /* Couleur de focus */
+    box-shadow: 0 0 5px rgba(98, 0, 234, 0.5); /* Effet de surbrillance */
+}
+
+option {
+    color: #333;
+}
+
+/* Style pour le menu déroulant en mode sombre */
+body.dark-mode select {
+    background-color: #333; /* Fond sombre */
+    color: #f4f4f4; /* Texte clair */
+    border: 1px solid #555; /* Bordure discrète */
+}
+
+body.dark-mode select:focus {
+    border-color: #792fe0; /* Couleur de focus */
+    box-shadow: 0 0 5px rgba(121, 47, 224, 0.5); /* Effet de surbrillance */
+}
+
+/* Style des options */
+body.dark-mode option {
+    background-color: #444; /* Fond des options */
+    color: #f4f4f4; /* Texte clair */
+}
+
+

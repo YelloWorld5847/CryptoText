@@ -63,10 +63,19 @@ def decrypt_message_stream(text_to_decrypt):
     yield f"data: Décryptage terminé pour '{text_to_decrypt}'\n\n"
 
 # Endpoint pour les événements SSE
+# @app.route('/stream')
+# def stream():
+#     encrypted_text = request.args.get('text', 'Texte par défaut')
+#     langue = request.args.get('langue', 'bigrams.dat')
+#     print(f"langue :{langue}")
+#     return Response(decrypt_message_progressive("swann.txt", langue, encrypted_text), content_type='text/event-stream')
+#
 @app.route('/stream')
 def stream():
     encrypted_text = request.args.get('text', 'Texte par défaut')
-    return Response(decrypt_message_progressive("swann.txt", "bigrams.dat", encrypted_text), content_type='text/event-stream')
+    langue = request.args.get('langue', 'bigrams.dat')  # Récupère la langue passée dans l'URL
+    print(langue)
+    return Response(decrypt_message_progressive("swann.txt", langue, encrypted_text), content_type='text/event-stream')
 
 
 
@@ -75,7 +84,8 @@ def stream():
 def decrypt():
     if request.method == 'POST':
         encrypted_text = request.form['encrypted_text']  # Récupère la phrase cryptée
-        return render_template('decrypt.html', encrypted_text=encrypted_text)
+        langue = request.form['langue']  # Récupère la langue choisi
+        return render_template('decrypt.html', encrypted_text=encrypted_text, langue=langue)
 
     return render_template('decrypt.html')
 # @app.route('/decrypt', methods=['GET', 'POST'])
